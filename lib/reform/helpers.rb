@@ -11,7 +11,7 @@
       to_return << %Q{<div class="required_description"><span class="required">*</span> Required field</div>} if options.has_key?(:required_description) && options[:required_description] == true
       to_return << %Q{</div>}
       to_return << %Q{</div>}
-      @template.concat to_return.join('')
+      @template.safe_concat to_return.join
     end    
     
     def wrapping(type, method, field_name, label, row_class, label_class, field, options = {})
@@ -36,7 +36,7 @@
         to_return << %Q{</div>}
         to_return << %Q{</div>}
         to_return << %Q{<script type="text/javascript">$(document).ready(function() { $('##{field_id}').autogrow({ minHeight: $('##{field_id}').height() }); });</script>} if options[:height] == :auto
-        return to_return
+        return to_return.join.html_safe
       else
         field
       end
@@ -78,7 +78,7 @@
       errors = inline_errors(method) if @object.respond_to?(:errors)
       id = id.downcase.gsub(/[\[\]]/, '_').gsub(/\]$/, '').gsub(/__/, '_')
       @in_row    = true
-      @template.concat <<-HTML
+      @template.safe_concat <<-HTML
         <div id="#{id}" class="field field-custom #{options[:row_class]}" style="#{style}">
           <div class="field-label #{options[:label_class]}">
             <label for="#{method}">#{required}#{label.to_s}</label>
@@ -94,13 +94,13 @@
     end
 
     def inline_errors(method, options = {})
-      errors = @object.respond_to?(:errors) ? @object.errors.on(method).to_a : []
+      errors = @object.respond_to?(:errors) ? @object.errors[method] : []
       @template.content_tag(:div, errors.join('<br />'), :class => 'field-errors') unless errors.empty?
     end
 
     def inline_help(help, class_name = nil)
       class_name = class_name || ""
-      %Q{<div class="field-help #{class_name}">#{help}</div>} if help
+      @template.content_tag(:div, help, :class => class_name) if help
     end
 
     def semantic_group(method, type, field_name, label, row_class, label_class, fields, options = {})
@@ -119,7 +119,7 @@
       to_return << help
       to_return << %Q{</div>}
       to_return << %Q{</div>}
-      return to_return.join("")
+      return to_return.join.html_safe
     end
 
     def boolean_field_wrapper(input, name, value, text, help = nil, class_name = nil)

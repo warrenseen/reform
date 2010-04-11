@@ -1,7 +1,7 @@
 module Reform
 
   class Builder < ActionView::Helpers::FormBuilder
-
+    include Haml::Helpers if defined? Haml
     include Helpers
     
     def field_settings(method, options = {}, tag_value = nil)
