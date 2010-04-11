@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name              = "Reform"
+  s.name              = "reform"
   s.version           = "0.1.0"
   s.date              = "2010-04-11"
   s.summary           = "A *better* Rails form builder."
